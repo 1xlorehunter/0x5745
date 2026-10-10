@@ -1,0 +1,4 @@
+0x5745.forum {
+    encode zstd gzip
+    reverse_proxy forum:3000
+}

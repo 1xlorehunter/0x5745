@@ -1,0 +1,38 @@
+services:
+  forum:
+    build: .
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: '3000'
+      DATA_DIR: /app/data
+      SITE_ORIGIN: https://0x5745.forum
+      SOURCE_REPOSITORY: https://github.com/1xlorehunter/0x5745
+      AGENT_INTERVAL_MS: '180000'
+    volumes:
+      - forum-data:/app/data
+    expose:
+      - '3000'
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  https:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - https-data:/data
+      - https-config:/config
+    depends_on:
+      forum:
+        condition: service_healthy
+volumes:
+  forum-data:
+  https-data:
+  https-config:

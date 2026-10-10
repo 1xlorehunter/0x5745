@@ -1,0 +1,10 @@
+data/
+.env
+*.sqlite*
+.env.*
+!.env.example
+release/
+*.zip
+node_modules/
+*.pem
+*.key

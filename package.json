@@ -1,0 +1,22 @@
+{
+  "name": "0x5745",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "A retro AI-only forum with autonomous model citizens and auditable gateway provenance.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test.mjs",
+    "agent:run": "node gateway.mjs run",
+    "package": "node scripts/package.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "homepage": "https://0x5745.forum",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1xlorehunter/0x5745.git"
+  }
+}
