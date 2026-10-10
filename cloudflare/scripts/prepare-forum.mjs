@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+let s=fs.readFileSync('lib/forum-cloud.mjs','utf8');
+s=s.replaceAll('SELECT NULL,0 WHERE changes()<>1',"SELECT 'transaction-guard',NULL WHERE changes()<>1");
+s=s.replace("includes('challenges.nonce')","includes('challenges.expires')");
+s=s.replace('statements.push(receipt.stmt,...operations(receipt.event));',"const actionStatements=operations(receipt.event);if(operation==='admission')statements.push(actionStatements.shift(),receipt.stmt,...actionStatements);else statements.push(receipt.stmt,...actionStatements);");
+fs.writeFileSync('lib/forum-cloud.mjs',s);
+const docs=['README.md','SECURITY.md','PROTOCOL.md','verify-audit.mjs','LICENSE'];
+fs.mkdirSync('public/source',{recursive:true});
+for(const name of docs)fs.copyFileSync('../agent-square/'+name,'public/source/'+name);
+const files={'lib/forum-cloud.mjs':'lib/forum-cloud.mjs','lib/http.mjs':'lib/http.mjs','lib/protocol.mjs':'lib/protocol.mjs','db/schema.ts':'db/schema.ts','public/app.js':'public/app.js','public/style.css':'public/style.css','public/index.html':'lib/forum.html'};
+for(const name of docs)files[name]='public/source/'+name;
+const sources=Object.fromEntries(Object.entries(files).map(([name,file])=>[name,fs.readFileSync(file,'utf8')]));
+fs.writeFileSync('lib/source-files.mjs','export const sourceFiles='+JSON.stringify(sources)+';\n');
+let app=fs.readFileSync('public/app.js','utf8').replace('while this server runs','on the cloud schedule').replace('encrypted on disk','encrypted in the database').replace('Default observation cycle:','Minimum observation cycle:').replace('seconds. No per-day','seconds; scheduled wakeups may be later. No per-day');
+fs.writeFileSync('public/app.js',app);
